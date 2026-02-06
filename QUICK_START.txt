@@ -1,0 +1,73 @@
+========================================
+DAILY DIARY DEMO v1 - QUICK START
+========================================
+
+HOW TO RUN:
+-----------
+1. Open "index.html" in any web browser
+   (Double-click the file)
+
+2. Click "+ New Entry" to create a diary entry
+
+3. Navigate through 8 tabs:
+   Tab 1: General (contract, weather)
+   Tab 2: Personnel (add staff)
+   Tab 3: Equipment (add equipment)
+   Tab 4: Work Progress (activities)
+   Tab 5: Delays (track delays)
+   Tab 6: Safety & Weather Impact
+   Tab 7: Production (materials, visitors)
+   Tab 8: Events (instructions, signature)
+
+4. Use "Add Person", "Add Equipment" etc. buttons
+   to create rows in each table
+
+5. Sign at the bottom of Tab 8
+
+6. Check the confirmation box
+
+7. Click "Save Diary Entry"
+
+8. View saved entries by clicking "Diary Entries"
+
+
+FEATURES:
+---------
+✓ All 8 tabs from spec
+✓ Dynamic add/delete rows
+✓ Auto-calculations (totals, variances)
+✓ Digital signature
+✓ Data saves in browser
+✓ View all entries
+✓ Minimal styling (functional first)
+
+
+NOTES:
+------
+- Data saved in browser only (localStorage)
+- No server needed
+- No installation needed
+- Works offline
+- Photo upload is placeholder (Phase 2)
+
+
+DEMO DATA SUGGESTION:
+---------------------
+Contract: 24029
+Supervisor: Willem Jansen van Vuuren
+Project: SMH/Addax
+Location: Nouakchott, Mauritania
+Date: Today
+
+Add 2-3 personnel with different roles
+Add 1-2 equipment items
+Add 1 activity (B20 - Welding)
+Fill basic weather info
+Sign and save
+
+
+========================================
+Created: February 2026
+For: Philip - Site Management
+========================================
+
