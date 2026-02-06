@@ -1080,16 +1080,14 @@
                 date: date,
                 projectLocation: document.getElementById('projectLocation').value,
                 
-                // Weather
-                weather: {
-                    condition: document.getElementById('weatherCondition').value,
-                    minTemp: document.getElementById('minTemp').value,
-                    maxTemp: document.getElementById('maxTemp').value,
-                    windSpeed: document.getElementById('windSpeed').value,
-                    humidity: document.getElementById('humidity').value,
-                    rainfall: document.getElementById('rainfall').value,
-                    rainfallDuration: document.getElementById('rainfallDuration').value
-                },
+                // Weather (flattened for export)
+                weatherCondition: document.getElementById('weatherCondition').value,
+                minTemp: document.getElementById('minTemp').value,
+                maxTemp: document.getElementById('maxTemp').value,
+                windSpeed: document.getElementById('windSpeed').value,
+                humidity: document.getElementById('humidity').value,
+                rainfall: document.getElementById('rainfall').value,
+                rainfallDuration: document.getElementById('rainfallDuration').value,
                 
                 // Summaries
                 workCompleted: document.getElementById('workCompleted').value,
