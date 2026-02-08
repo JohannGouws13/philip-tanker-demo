@@ -1872,6 +1872,8 @@
             doc.text(`Temperature: ${entry.minTemp}°C - ${entry.maxTemp}°C`, 20, yPos);
             yPos += 7;
             doc.text(`Wind: ${entry.windSpeed} km/h | Humidity: ${entry.humidity}%`, 20, yPos);
+            yPos += 7;
+            doc.text(`Rainfall: ${entry.rainfall || 0} mm | Duration: ${entry.rainfallDuration || 0} hours`, 20, yPos);
             yPos += 12;
             
             // Personnel Table
@@ -1985,6 +1987,8 @@
             doc.text(`Safety Inspections: ${entry.safetyInspections || 'None'}`, 20, yPos);
             yPos += 7;
             doc.text(`PPE Compliance: ${entry.ppeCompliance || 'N/A'}`, 20, yPos);
+            yPos += 7;
+            doc.text(`First Aid/Medical: ${entry.firstAid || 'None'}`, 20, yPos);
             yPos += 12;
             
             // Work Summary
@@ -2013,6 +2017,148 @@
                 const issueLines = doc.splitTextToSize(entry.issuesDelays, 170);
                 doc.text(issueLines, 20, yPos);
                 yPos += (issueLines.length * 7) + 7;
+            }
+            
+            // Check for new page
+            if (yPos > 230) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Weather Impacts Table
+            if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.text('WEATHER IMPACTS', 20, yPos);
+                yPos += 5;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Impact Type', 'Severity', 'Affected Activities', 'Duration (hrs)', 'Mitigation']],
+                    body: entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [255, 152, 0] },
+                    margin: { left: 20, right: 20 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 12;
+            }
+            
+            // Check for new page
+            if (yPos > 220) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Materials Table
+            if (entry.materials && entry.materials.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.text('MATERIALS DELIVERED', 20, yPos);
+                yPos += 5;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Material Type', 'Quantity', 'Unit', 'Notes']],
+                    body: entry.materials.map(m => [m.materialType, m.quantity, m.unit, m.notes]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [76, 175, 80] },
+                    margin: { left: 20, right: 20 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 12;
+            }
+            
+            // Materials Needed Tomorrow
+            if (entry.materialsNeeded) {
+                if (yPos > 240) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('MATERIALS NEEDED TOMORROW', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                const matLines = doc.splitTextToSize(entry.materialsNeeded, 170);
+                doc.text(matLines, 20, yPos);
+                yPos += (matLines.length * 7) + 7;
+            }
+            
+            // Production Issues
+            if (entry.productionIssues) {
+                if (yPos > 240) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('PRODUCTION ISSUES/DELAYS', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                const prodLines = doc.splitTextToSize(entry.productionIssues, 170);
+                doc.text(prodLines, 20, yPos);
+                yPos += (prodLines.length * 7) + 7;
+            }
+            
+            // Check for new page
+            if (yPos > 220) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Visitors Table
+            if (entry.visitors && entry.visitors.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.text('SITE VISITORS', 20, yPos);
+                yPos += 5;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Name', 'Company', 'Purpose', 'Time On Site']],
+                    body: entry.visitors.map(v => [v.name, v.company, v.purpose, v.timeOnSite]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [156, 39, 176] },
+                    margin: { left: 20, right: 20 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 12;
+            }
+            
+            // General Comments
+            if (entry.generalComments) {
+                if (yPos > 240) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('GENERAL COMMENTS', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                const commentLines = doc.splitTextToSize(entry.generalComments, 170);
+                doc.text(commentLines, 20, yPos);
+                yPos += (commentLines.length * 7) + 7;
+            }
+            
+            // Check for new page
+            if (yPos > 220) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Events Table
+            if (entry.events && entry.events.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.text('EVENTS, INSTRUCTIONS & VARIATIONS', 20, yPos);
+                yPos += 5;
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Date', 'Description', 'Type', 'Source', 'Cost Impact', 'Liability', 'Reference', 'Status']],
+                    body: entry.events.map(e => [e.eventDate, e.description, e.type, e.source, e.costImpact, e.liability, e.reference, e.status]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [33, 150, 243] },
+                    margin: { left: 20, right: 20 },
+                    styles: { fontSize: 8 }
+                });
+                
+                yPos = doc.lastAutoTable.finalY + 12;
             }
             
             // Check for new page
