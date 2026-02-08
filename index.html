@@ -559,8 +559,8 @@
         <div class="top-nav">
             <button onclick="showView('form')">+ New Entry</button>
             <button onclick="showView('list')">Diary Entries</button>
-            <button onclick="populateTestData()" style="background: #8b5cf6; border-color: #7c3aed;">🧪 Populate Test Data</button>
-            <button onclick="clearAllEntries()" style="background: #dc2626; border-color: #991b1b;">🗑️ Clear All Entries</button>
+            <button onclick="populateTestData()">🧪 Populate Test Data</button>
+            <button onclick="clearAllEntries()">🗑️ Clear All Entries</button>
         </div>
         
         <div id="message" class="message"></div>
@@ -790,27 +790,6 @@
                         <textarea id="firstAid" placeholder="Any first aid cases, treatments provided"></textarea>
                     </div>
                 </div>
-                
-                <div class="array-container">
-                    <div class="array-header">
-                        <h3>Weather Impact</h3>
-                        <button class="add-btn" onclick="addWeatherImpact()">Add Weather Impact</button>
-                    </div>
-                    <table id="weatherImpactTable">
-                        <thead>
-                            <tr>
-                                <th>Impact Type</th>
-                                <th>Severity</th>
-                                <th>Affected Activities</th>
-                                <th>Duration (hours)</th>
-                                <th>Mitigation Actions</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="weatherImpactBody">
-                        </tbody>
-                    </table>
-                </div>
             </div>
             
             <!-- Tab 7: Production & Photos -->
@@ -959,7 +938,6 @@
         let equipment = [];
         let activities = [];
         let delays = [];
-        let weatherImpacts = [];
         let materials = [];
         let visitors = [];
         let events = [];
@@ -1085,11 +1063,6 @@
             document.getElementById('safetyInspections').value = 'Daily site inspection completed. PPE compliance check - 100%. Fire extinguisher locations verified. First aid kit restocked.';
             document.getElementById('ppeCompliance').value = '100% - All personnel in full PPE';
             document.getElementById('firstAid').value = 'Minor cut treated - operator hand injury from metal edge. Bandaged on site.';
-            
-            // Weather Impacts - Add 1
-            weatherImpacts = [];
-            weatherImpacts.push({ id: Date.now() + 41, impactType: 'High Winds', severity: 'Medium', affectedActivities: 'Crane operations suspended 11:00-13:00', duration: 2, mitigation: 'Rescheduled lifting operations to late afternoon when wind subsided' });
-            renderWeatherImpacts();
             
             // Tab 7: Production - Materials
             materials = [];
@@ -1383,59 +1356,6 @@
             document.getElementById('delayTotals').textContent = `Total Hours Lost: ${totalHoursLost.toFixed(1)}`;
         }
         
-        // Weather Impact Functions
-        function addWeatherImpact() {
-            const row = {
-                id: Date.now(),
-                impactType: '',
-                severity: '',
-                affectedActivities: '',
-                duration: 0,
-                mitigation: ''
-            };
-            weatherImpacts.push(row);
-            renderWeatherImpacts();
-        }
-        
-        function removeWeatherImpact(id) {
-            weatherImpacts = weatherImpacts.filter(w => w.id !== id);
-            renderWeatherImpacts();
-        }
-        
-        function renderWeatherImpacts() {
-            const tbody = document.getElementById('weatherImpactBody');
-            tbody.innerHTML = '';
-            
-            const impactTypes = ['', 'Heavy Rain', 'High Winds', 'Extreme Heat', 'Cold', 'Storm', 'Fog', 'Dust Storm', 'Flooding', 'Other'];
-            const severities = ['', 'Low', 'Medium', 'High', 'Critical'];
-            
-            weatherImpacts.forEach(impact => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <select onchange="updateWeatherImpact(${impact.id}, 'impactType', this.value)">
-                            ${impactTypes.map(type => `<option value="${type}" ${impact.impactType === type ? 'selected' : ''}>${type}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td>
-                        <select onchange="updateWeatherImpact(${impact.id}, 'severity', this.value)">
-                            ${severities.map(sev => `<option value="${sev}" ${impact.severity === sev ? 'selected' : ''}>${sev}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td><input type="text" value="${impact.affectedActivities}" onchange="updateWeatherImpact(${impact.id}, 'affectedActivities', this.value)"></td>
-                    <td><input type="number" value="${impact.duration}" step="0.5" onchange="updateWeatherImpact(${impact.id}, 'duration', parseFloat(this.value))"></td>
-                    <td><input type="text" value="${impact.mitigation}" onchange="updateWeatherImpact(${impact.id}, 'mitigation', this.value)"></td>
-                    <td><button class="delete-btn" onclick="removeWeatherImpact(${impact.id})">Delete</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        
-        function updateWeatherImpact(id, field, value) {
-            const impact = weatherImpacts.find(w => w.id === id);
-            if (impact) impact[field] = value;
-        }
-        
         // Materials Functions
         function addMaterial() {
             const row = {
@@ -1695,7 +1615,6 @@
                 safetyInspections: document.getElementById('safetyInspections').value,
                 ppeCompliance: document.getElementById('ppeCompliance').value,
                 firstAid: document.getElementById('firstAid').value,
-                weatherImpacts: weatherImpacts,
                 
                 // Production
                 materials: materials,
@@ -2020,30 +1939,6 @@
             }
             
             // Check for new page
-            if (yPos > 230) {
-                doc.addPage();
-                yPos = 20;
-            }
-            
-            // Weather Impacts Table
-            if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
-                doc.setFont(undefined, 'bold');
-                doc.text('WEATHER IMPACTS', 20, yPos);
-                yPos += 5;
-                
-                doc.autoTable({
-                    startY: yPos,
-                    head: [['Impact Type', 'Severity', 'Affected Activities', 'Duration (hrs)', 'Mitigation']],
-                    body: entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]),
-                    theme: 'grid',
-                    headStyles: { fillColor: [255, 152, 0] },
-                    margin: { left: 20, right: 20 }
-                });
-                
-                yPos = doc.lastAutoTable.finalY + 12;
-            }
-            
-            // Check for new page
             if (yPos > 220) {
                 doc.addPage();
                 yPos = 20;
@@ -2342,29 +2237,6 @@
                     yPos = doc.lastAutoTable.finalY + 12;
                 }
                 
-                // Weather Impacts Table
-                if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
-                    if (yPos > 220) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-                    doc.setFont(undefined, 'bold');
-                    doc.text('WEATHER IMPACTS', 20, yPos);
-                    yPos += 5;
-                    
-                    doc.autoTable({
-                        startY: yPos,
-                        head: [['Type', 'Severity', 'Affected', 'Hrs', 'Mitigation']],
-                        body: entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]),
-                        theme: 'grid',
-                        headStyles: { fillColor: [255, 152, 0] },
-                        margin: { left: 20, right: 20 },
-                        styles: { fontSize: 8 }
-                    });
-                    
-                    yPos = doc.lastAutoTable.finalY + 12;
-                }
-                
                 // Materials Table
                 if (entry.materials && entry.materials.length > 0) {
                     if (yPos > 220) {
@@ -2652,17 +2524,6 @@
                 XLSX.utils.book_append_sheet(wb, wsDelays, 'Delays');
             }
             
-            // Weather Impacts Sheet
-            if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
-                const weatherData = [
-                    ['WEATHER IMPACTS'],
-                    ['Impact Type', 'Severity', 'Activities Affected', 'Duration (hrs)', 'Mitigation'],
-                    ...entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation])
-                ];
-                const wsWeather = XLSX.utils.aoa_to_sheet(weatherData);
-                XLSX.utils.book_append_sheet(wb, wsWeather, 'Weather Impacts');
-            }
-            
             // Materials Sheet
             if (entry.materials && entry.materials.length > 0) {
                 const materialsData = [
@@ -2795,20 +2656,6 @@
             if (allDelays.length > 1) {
                 const wsDelays = XLSX.utils.aoa_to_sheet(allDelays);
                 XLSX.utils.book_append_sheet(wb, wsDelays, 'All Delays');
-            }
-            
-            // All Weather Impacts Combined
-            const allWeatherImpacts = [['Date', 'Contract', 'Project', 'Impact Type', 'Severity', 'Affected Activities', 'Duration (hrs)', 'Mitigation']];
-            entries.forEach(entry => {
-                if (entry.weatherImpacts) {
-                    entry.weatherImpacts.forEach(w => {
-                        allWeatherImpacts.push([entry.date, entry.contractNumber, entry.projectName, w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]);
-                    });
-                }
-            });
-            if (allWeatherImpacts.length > 1) {
-                const wsWeatherImpacts = XLSX.utils.aoa_to_sheet(allWeatherImpacts);
-                XLSX.utils.book_append_sheet(wb, wsWeatherImpacts, 'All Weather Impacts');
             }
             
             // All Materials Combined
