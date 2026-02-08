@@ -560,6 +560,7 @@
             <button onclick="showView('form')">+ New Entry</button>
             <button onclick="showView('list')">Diary Entries</button>
             <button onclick="populateTestData()" style="background: #8b5cf6; border-color: #7c3aed;">🧪 Populate Test Data</button>
+            <button onclick="clearAllEntries()" style="background: #dc2626; border-color: #991b1b;">🗑️ Clear All Entries</button>
         </div>
         
         <div id="message" class="message"></div>
@@ -1815,6 +1816,15 @@
                 localStorage.setItem('diaryEntries', JSON.stringify(entries));
                 loadEntries();
                 showMessage('Entry deleted successfully', 'success');
+            }
+        }
+        
+        // Clear All Entries
+        function clearAllEntries() {
+            if (confirm('⚠️ WARNING: This will permanently delete ALL diary entries from your browser storage. This cannot be undone!\n\nAre you absolutely sure you want to continue?')) {
+                localStorage.removeItem('diaryEntries');
+                loadEntries();
+                showMessage('✅ All entries have been cleared. You can now create new entries with the correct data structure.', 'success');
             }
         }
         
