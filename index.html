@@ -1088,14 +1088,14 @@
             
             // Weather Impacts - Add 1
             weatherImpacts = [];
-            weatherImpacts.push({ id: Date.now() + 41, impactType: 'Wind', severity: 'Moderate', affectedActivities: 'Crane operations suspended 11:00-13:00', duration: 2, mitigation: 'Rescheduled lifting operations to late afternoon when wind subsided' });
+            weatherImpacts.push({ id: Date.now() + 41, impactType: 'High Winds', severity: 'Medium', affectedActivities: 'Crane operations suspended 11:00-13:00', duration: 2, mitigation: 'Rescheduled lifting operations to late afternoon when wind subsided' });
             renderWeatherImpacts();
             
             // Tab 7: Production - Materials
             materials = [];
-            materials.push({ id: Date.now() + 51, materialType: 'HDPE Pipes 600mm', quantity: 250, unit: 'meters', notes: 'Delivered by Afripipes, batch #A2024-089' });
-            materials.push({ id: Date.now() + 52, materialType: 'Cement 42.5N', quantity: 80, unit: 'bags', notes: 'PPC brand, for valve station foundations' });
-            materials.push({ id: Date.now() + 53, materialType: 'Backfill aggregate', quantity: 120, unit: 'tons', notes: 'Grade A compaction material, tested and approved' });
+            materials.push({ id: Date.now() + 51, materialType: 'Pipe sections', quantity: 250, unit: 'm²', notes: 'HDPE 600mm - Delivered by Afripipes, batch #A2024-089' });
+            materials.push({ id: Date.now() + 52, materialType: 'Concrete', quantity: 80, unit: 'bags', notes: 'Cement 42.5N - PPC brand, for valve station foundations' });
+            materials.push({ id: Date.now() + 53, materialType: 'Sand/Aggregate', quantity: 120, unit: 'tonnes', notes: 'Backfill material - Grade A compaction material, tested and approved' });
             renderMaterials();
             
             document.getElementById('materialsNeeded').value = 'Required for Monday: 150m additional HDPE pipes, 40 bags cement, welding electrodes (E7018), hydraulic oil for compactor service.';
@@ -1111,9 +1111,9 @@
             
             // Tab 8: Events - Add 3 events
             events = [];
-            events.push({ id: Date.now() + 71, eventDate: '2026-02-08', description: 'Verbal instruction to proceed with alternative access road', type: 'Instruction', source: 'Client Project Manager', costImpact: 'R 45,000', liability: 'Client', reference: 'VI-2026-012', status: 'Pending written confirmation' });
-            events.push({ id: Date.now() + 72, eventDate: '2026-02-07', description: 'Design change: valve station relocation 15m east', type: 'Variation', source: 'Engineer', costImpact: 'R 28,500', liability: 'Under review', reference: 'VO-2026-008', status: 'Submitted for approval' });
-            events.push({ id: Date.now() + 73, eventDate: '2026-02-08', description: 'Site visit by regional safety officer - commendation issued', type: 'Notification', source: 'Safety Authority', costImpact: 'Nil', liability: 'N/A', reference: 'SR-2026-0208', status: 'Closed' });
+            events.push({ id: Date.now() + 71, eventDate: '2026-02-08', description: 'Verbal instruction to proceed with alternative access road', type: 'Client Instruction', source: 'Client Project Manager', costImpact: 'High ($25k-$100k)', liability: 'Client', reference: 'VI-2026-012', status: 'Under Review' });
+            events.push({ id: Date.now() + 72, eventDate: '2026-02-07', description: 'Design change: valve station relocation 15m east', type: 'Variation Order', source: 'Consulting Engineer', costImpact: 'Medium ($5k-$25k)', liability: 'TBD', reference: 'VO-2026-008', status: 'Priced' });
+            events.push({ id: Date.now() + 73, eventDate: '2026-02-08', description: 'Site visit by regional safety officer - commendation issued', type: 'Other', source: 'Safety Authority', costImpact: 'None', liability: 'Client', reference: 'SR-2026-0208', status: 'Closed' });
             renderEvents();
             
             // Signature
