@@ -88,7 +88,7 @@
             font-size: 14px;
             transition: all 0.2s ease;
             font-family: 'Inter', sans-serif;
-        }
+        }/Users/johanngouws/Desktop/Philip Smit (Tanker)/MD Docs/SESSION_SUMMARY.md
         
         .top-nav button:hover {
             background: #f8fafc;
@@ -2143,8 +2143,8 @@
             if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
                 const weatherData = [
                     ['WEATHER IMPACTS'],
-                    ['Weather Type', 'Activities Affected', 'Hours Lost', 'Mitigation'],
-                    ...entry.weatherImpacts.map(w => [w.weatherType, w.affectedActivities, w.hoursLost, w.mitigation])
+                    ['Impact Type', 'Severity', 'Activities Affected', 'Duration (hrs)', 'Mitigation'],
+                    ...entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation])
                 ];
                 const wsWeather = XLSX.utils.aoa_to_sheet(weatherData);
                 XLSX.utils.book_append_sheet(wb, wsWeather, 'Weather Impacts');
@@ -2154,8 +2154,8 @@
             if (entry.materials && entry.materials.length > 0) {
                 const materialsData = [
                     ['MATERIALS RECEIVED'],
-                    ['Material', 'Quantity', 'Unit', 'Supplier', 'Date Received'],
-                    ...entry.materials.map(m => [m.material, m.quantity, m.unit, m.supplier, m.dateReceived])
+                    ['Material Type', 'Quantity', 'Unit', 'Notes'],
+                    ...entry.materials.map(m => [m.materialType, m.quantity, m.unit, m.notes])
                 ];
                 const wsMaterials = XLSX.utils.aoa_to_sheet(materialsData);
                 XLSX.utils.book_append_sheet(wb, wsMaterials, 'Materials');
@@ -2165,8 +2165,8 @@
             if (entry.visitors && entry.visitors.length > 0) {
                 const visitorsData = [
                     ['VISITORS'],
-                    ['Name', 'Company', 'Purpose', 'Time In', 'Time Out'],
-                    ...entry.visitors.map(v => [v.name, v.company, v.purpose, v.timeIn, v.timeOut])
+                    ['Name', 'Company', 'Purpose', 'Time On Site'],
+                    ...entry.visitors.map(v => [v.name, v.company, v.purpose, v.timeOnSite])
                 ];
                 const wsVisitors = XLSX.utils.aoa_to_sheet(visitorsData);
                 XLSX.utils.book_append_sheet(wb, wsVisitors, 'Visitors');
@@ -2176,8 +2176,8 @@
             if (entry.events && entry.events.length > 0) {
                 const eventsData = [
                     ['EVENTS'],
-                    ['Description', 'From Whom', 'Cost Impact', 'Whose Cost'],
-                    ...entry.events.map(e => [e.description, e.fromWhom, e.costImpact, e.whoseCost])
+                    ['Date', 'Description', 'Type', 'Source', 'Cost Impact', 'Liability', 'Reference', 'Status'],
+                    ...entry.events.map(e => [e.eventDate, e.description, e.type, e.source, e.costImpact, e.liability, e.reference, e.status])
                 ];
                 const wsEvents = XLSX.utils.aoa_to_sheet(eventsData);
                 XLSX.utils.book_append_sheet(wb, wsEvents, 'Events');
@@ -2282,6 +2282,62 @@
             if (allDelays.length > 1) {
                 const wsDelays = XLSX.utils.aoa_to_sheet(allDelays);
                 XLSX.utils.book_append_sheet(wb, wsDelays, 'All Delays');
+            }
+            
+            // All Weather Impacts Combined
+            const allWeatherImpacts = [['Date', 'Contract', 'Project', 'Impact Type', 'Severity', 'Affected Activities', 'Duration (hrs)', 'Mitigation']];
+            entries.forEach(entry => {
+                if (entry.weatherImpacts) {
+                    entry.weatherImpacts.forEach(w => {
+                        allWeatherImpacts.push([entry.date, entry.contractNumber, entry.projectName, w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]);
+                    });
+                }
+            });
+            if (allWeatherImpacts.length > 1) {
+                const wsWeatherImpacts = XLSX.utils.aoa_to_sheet(allWeatherImpacts);
+                XLSX.utils.book_append_sheet(wb, wsWeatherImpacts, 'All Weather Impacts');
+            }
+            
+            // All Materials Combined
+            const allMaterials = [['Date', 'Contract', 'Project', 'Material Type', 'Quantity', 'Unit', 'Notes']];
+            entries.forEach(entry => {
+                if (entry.materials) {
+                    entry.materials.forEach(m => {
+                        allMaterials.push([entry.date, entry.contractNumber, entry.projectName, m.materialType, m.quantity, m.unit, m.notes]);
+                    });
+                }
+            });
+            if (allMaterials.length > 1) {
+                const wsMaterials = XLSX.utils.aoa_to_sheet(allMaterials);
+                XLSX.utils.book_append_sheet(wb, wsMaterials, 'All Materials');
+            }
+            
+            // All Visitors Combined
+            const allVisitors = [['Date', 'Contract', 'Project', 'Visitor Name', 'Company', 'Purpose', 'Time On Site']];
+            entries.forEach(entry => {
+                if (entry.visitors) {
+                    entry.visitors.forEach(v => {
+                        allVisitors.push([entry.date, entry.contractNumber, entry.projectName, v.name, v.company, v.purpose, v.timeOnSite]);
+                    });
+                }
+            });
+            if (allVisitors.length > 1) {
+                const wsVisitors = XLSX.utils.aoa_to_sheet(allVisitors);
+                XLSX.utils.book_append_sheet(wb, wsVisitors, 'All Visitors');
+            }
+            
+            // All Events Combined
+            const allEvents = [['Date', 'Contract', 'Project', 'Event Date', 'Description', 'Type', 'Source', 'Cost Impact', 'Liability', 'Reference', 'Status']];
+            entries.forEach(entry => {
+                if (entry.events) {
+                    entry.events.forEach(e => {
+                        allEvents.push([entry.date, entry.contractNumber, entry.projectName, e.eventDate, e.description, e.type, e.source, e.costImpact, e.liability, e.reference, e.status]);
+                    });
+                }
+            });
+            if (allEvents.length > 1) {
+                const wsEvents = XLSX.utils.aoa_to_sheet(allEvents);
+                XLSX.utils.book_append_sheet(wb, wsEvents, 'All Events');
             }
             
             // Save
