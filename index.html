@@ -2065,7 +2065,7 @@
             doc.text(`Total Entries: ${entries.length}`, 105, 90, { align: 'center' });
             doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 100, { align: 'center' });
             
-            // Export each entry
+            // Export each entry with full detail
             entries.forEach((entry, index) => {
                 doc.addPage();
                 let yPos = 20;
@@ -2088,56 +2088,230 @@
                 doc.text(`Location: ${entry.projectLocation}`, 20, yPos);
                 yPos += 12;
                 
-                // Personnel Summary
+                // Weather
+                doc.setFont(undefined, 'bold');
+                doc.text('WEATHER CONDITIONS', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.text(`${entry.weatherCondition} | Temp: ${entry.minTemp}-${entry.maxTemp}°C | Wind: ${entry.windSpeed}km/h | Humidity: ${entry.humidity}%`, 20, yPos);
+                yPos += 12;
+                
+                // Personnel Table
                 if (entry.personnel && entry.personnel.length > 0) {
-                    const totalHours = entry.personnel.reduce((sum, p) => sum + (parseFloat(p.hours) || 0), 0);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('PERSONNEL', 20, yPos);
-                    yPos += 7;
-                    doc.setFont(undefined, 'normal');
-                    doc.text(`Total: ${entry.personnel.length} staff | ${totalHours} manhours`, 20, yPos);
-                    yPos += 12;
-                }
-                
-                // Equipment Summary
-                if (entry.equipment && entry.equipment.length > 0) {
-                    doc.setFont(undefined, 'bold');
-                    doc.text('EQUIPMENT', 20, yPos);
-                    yPos += 7;
-                    doc.setFont(undefined, 'normal');
-                    doc.text(`Total: ${entry.equipment.length} items`, 20, yPos);
-                    yPos += 12;
-                }
-                
-                // Work Summary
-                if (entry.workCompleted) {
-                    doc.setFont(undefined, 'bold');
-                    doc.text('WORK COMPLETED', 20, yPos);
-                    yPos += 7;
-                    doc.setFont(undefined, 'normal');
-                    const workLines = doc.splitTextToSize(entry.workCompleted, 170);
-                    doc.text(workLines, 20, yPos);
-                    yPos += (workLines.length * 7) + 7;
-                }
-                
-                // Issues
-                if (entry.issuesDelays) {
-                    if (yPos > 240) {
+                    if (yPos > 200) {
                         doc.addPage();
                         yPos = 20;
                     }
                     doc.setFont(undefined, 'bold');
-                    doc.text('ISSUES & DELAYS', 20, yPos);
-                    yPos += 7;
+                    doc.text('PERSONNEL ON SITE', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Name', 'Role Category', 'Role/Title', 'Hours']],
+                        body: entry.personnel.map(p => [p.name, p.roleCategory, p.roleTitle, p.hours]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [0, 123, 255] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 9 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 10;
                     doc.setFont(undefined, 'normal');
-                    const issueLines = doc.splitTextToSize(entry.issuesDelays, 170);
-                    doc.text(issueLines, 20, yPos);
+                    doc.setFontSize(10);
+                    const totalHours = entry.personnel.reduce((sum, p) => sum + (parseFloat(p.hours) || 0), 0);
+                    doc.text(`Total: ${entry.personnel.length} staff | ${totalHours} manhours`, 20, yPos);
+                    yPos += 12;
+                    doc.setFontSize(12);
+                }
+                
+                // Equipment Table
+                if (entry.equipment && entry.equipment.length > 0) {
+                    if (yPos > 200) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('EQUIPMENT ON SITE', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Type', 'Qty', 'Hours', 'Condition', 'Remarks']],
+                        body: entry.equipment.map(e => [e.type, e.quantity, e.hours, e.condition, e.remarks]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [0, 123, 255] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 9 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Work Activities Table
+                if (entry.activities && entry.activities.length > 0) {
+                    if (yPos > 200) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('WORK PROGRESS', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Code', 'Description', 'Plan%', 'Actual%', 'Notes']],
+                        body: entry.activities.map(a => [a.code, a.description, a.planned, a.actual, a.notes]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [0, 123, 255] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 8 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Delays Table
+                if (entry.delays && entry.delays.length > 0) {
+                    if (yPos > 200) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('DELAYS', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Cause', 'Impact', 'Hrs Lost', 'Affected', 'Action']],
+                        body: entry.delays.map(d => [d.causeType, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [220, 53, 69] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 8 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Weather Impacts Table
+                if (entry.weatherImpacts && entry.weatherImpacts.length > 0) {
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('WEATHER IMPACTS', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Type', 'Severity', 'Affected', 'Hrs', 'Mitigation']],
+                        body: entry.weatherImpacts.map(w => [w.impactType, w.severity, w.affectedActivities, w.duration, w.mitigation]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [255, 152, 0] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 8 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Materials Table
+                if (entry.materials && entry.materials.length > 0) {
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('MATERIALS DELIVERED', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Material', 'Qty', 'Unit', 'Notes']],
+                        body: entry.materials.map(m => [m.materialType, m.quantity, m.unit, m.notes]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [76, 175, 80] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 9 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Visitors Table
+                if (entry.visitors && entry.visitors.length > 0) {
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('SITE VISITORS', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Name', 'Company', 'Purpose', 'Time']],
+                        body: entry.visitors.map(v => [v.name, v.company, v.purpose, v.timeOnSite]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [156, 39, 176] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 9 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Events Table
+                if (entry.events && entry.events.length > 0) {
+                    if (yPos > 220) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFont(undefined, 'bold');
+                    doc.text('EVENTS & INSTRUCTIONS', 20, yPos);
+                    yPos += 5;
+                    
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Date', 'Description', 'Type', 'Cost', 'Status']],
+                        body: entry.events.map(e => [e.eventDate, e.description, e.type, e.costImpact, e.status]),
+                        theme: 'grid',
+                        headStyles: { fillColor: [33, 150, 243] },
+                        margin: { left: 20, right: 20 },
+                        styles: { fontSize: 8 }
+                    });
+                    
+                    yPos = doc.lastAutoTable.finalY + 12;
+                }
+                
+                // Safety & Comments
+                if (yPos > 240) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFont(undefined, 'bold');
+                doc.text('SAFETY & WORK SUMMARY', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(10);
+                
+                if (entry.incidents) {
+                    doc.text(`Incidents: ${entry.incidents.substring(0, 80)}...`, 20, yPos);
+                    yPos += 6;
+                }
+                if (entry.workCompleted) {
+                    const workLines = doc.splitTextToSize(entry.workCompleted.substring(0, 200) + '...', 170);
+                    doc.text(workLines, 20, yPos);
+                    yPos += (workLines.length * 6);
                 }
                 
                 // Footer
                 doc.setFontSize(8);
                 doc.text(`Entry ID: ${entry.id}`, 20, 285);
-                doc.text(`Submitted: ${new Date(entry.timestamp).toLocaleString()}`, 150, 285);
+                doc.text(`Submitted: ${new Date(entry.timestamp).toLocaleString()}`, 120, 285);
             });
             
             // Save
