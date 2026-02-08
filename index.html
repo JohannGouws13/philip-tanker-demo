@@ -1776,7 +1776,7 @@
                 doc.autoTable({
                     startY: yPos,
                     head: [['Name', 'Role Category', 'Role/Title', 'Hours']],
-                    body: entry.personnel.map(p => [p.name, p.roleCategory, p.role, p.hours]),
+                    body: entry.personnel.map(p => [p.name, p.roleCategory, p.roleTitle, p.hours]),
                     theme: 'grid',
                     headStyles: { fillColor: [0, 123, 255] },
                     margin: { left: 20, right: 20 }
@@ -1804,8 +1804,8 @@
                 
                 doc.autoTable({
                     startY: yPos,
-                    head: [['Equipment', 'Type', 'Hours', 'Operator', 'Status']],
-                    body: entry.equipment.map(e => [e.name, e.type, e.hours, e.operator, e.status]),
+                    head: [['Type', 'Quantity', 'Hours', 'Condition', 'Remarks']],
+                    body: entry.equipment.map(e => [e.type, e.quantity, e.hours, e.condition, e.remarks]),
                     theme: 'grid',
                     headStyles: { fillColor: [0, 123, 255] },
                     margin: { left: 20, right: 20 }
@@ -1828,8 +1828,8 @@
                 
                 doc.autoTable({
                     startY: yPos,
-                    head: [['Activity', 'Location', 'Planned', 'Actual', 'Status']],
-                    body: entry.activities.map(a => [a.activity, a.location, a.planned, a.actual, a.status]),
+                    head: [['Code', 'Description', 'Planned (%)', 'Actual (%)', 'Notes']],
+                    body: entry.activities.map(a => [a.code, a.description, a.planned, a.actual, a.notes]),
                     theme: 'grid',
                     headStyles: { fillColor: [0, 123, 255] },
                     margin: { left: 20, right: 20 }
@@ -1852,8 +1852,8 @@
                 
                 doc.autoTable({
                     startY: yPos,
-                    head: [['Reason', 'Impact', 'Hours Lost', 'Responsible', 'Mitigation']],
-                    body: entry.delays.map(d => [d.reason, d.impact, d.hoursLost, d.responsible, d.mitigation]),
+                    head: [['Cause Type', 'Description', 'Impact', 'Hours Lost', 'Affected Activities', 'Action Taken']],
+                    body: entry.delays.map(d => [d.causeType, d.description, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]),
                     theme: 'grid',
                     headStyles: { fillColor: [220, 53, 69] },
                     margin: { left: 20, right: 20 }
@@ -2095,7 +2095,7 @@
                 const personnelData = [
                     ['PERSONNEL ON SITE'],
                     ['Name', 'Role Category', 'Role/Title', 'Hours'],
-                    ...entry.personnel.map(p => [p.name, p.roleCategory, p.role, p.hours]),
+                    ...entry.personnel.map(p => [p.name, p.roleCategory, p.roleTitle, p.hours]),
                     [],
                     ['Total Personnel', entry.personnel.length],
                     ['Total Manhours', entry.personnel.reduce((sum, p) => sum + (parseFloat(p.hours) || 0), 0)]
@@ -2108,8 +2108,8 @@
             if (entry.equipment && entry.equipment.length > 0) {
                 const equipmentData = [
                     ['EQUIPMENT ON SITE'],
-                    ['Equipment', 'Type', 'Hours', 'Operator', 'Status'],
-                    ...entry.equipment.map(e => [e.name, e.type, e.hours, e.operator, e.status])
+                    ['Type', 'Quantity', 'Hours', 'Condition', 'Remarks'],
+                    ...entry.equipment.map(e => [e.type, e.quantity, e.hours, e.condition, e.remarks])
                 ];
                 const wsEquipment = XLSX.utils.aoa_to_sheet(equipmentData);
                 XLSX.utils.book_append_sheet(wb, wsEquipment, 'Equipment');
@@ -2119,8 +2119,8 @@
             if (entry.activities && entry.activities.length > 0) {
                 const activitiesData = [
                     ['WORK PROGRESS'],
-                    ['Activity', 'Location', 'Planned', 'Actual', 'Status', 'Comments'],
-                    ...entry.activities.map(a => [a.activity, a.location, a.planned, a.actual, a.status, a.comments])
+                    ['Code', 'Description', 'Planned (%)', 'Actual (%)', 'Notes'],
+                    ...entry.activities.map(a => [a.code, a.description, a.planned, a.actual, a.notes])
                 ];
                 const wsActivities = XLSX.utils.aoa_to_sheet(activitiesData);
                 XLSX.utils.book_append_sheet(wb, wsActivities, 'Work Progress');
@@ -2130,8 +2130,8 @@
             if (entry.delays && entry.delays.length > 0) {
                 const delaysData = [
                     ['DELAYS'],
-                    ['Reason', 'Impact', 'Hours Lost', 'Responsible', 'Mitigation'],
-                    ...entry.delays.map(d => [d.reason, d.impact, d.hoursLost, d.responsible, d.mitigation]),
+                    ['Cause Type', 'Description', 'Impact', 'Hours Lost', 'Affected Activities', 'Action Taken'],
+                    ...entry.delays.map(d => [d.causeType, d.description, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]),
                     [],
                     ['Total Hours Lost', entry.delays.reduce((sum, d) => sum + (parseFloat(d.hoursLost) || 0), 0)]
                 ];
@@ -2233,7 +2233,7 @@
             entries.forEach(entry => {
                 if (entry.personnel) {
                     entry.personnel.forEach(p => {
-                        allPersonnel.push([entry.date, entry.contractNumber, entry.projectName, p.name, p.roleCategory, p.role, p.hours]);
+                        allPersonnel.push([entry.date, entry.contractNumber, entry.projectName, p.name, p.roleCategory, p.roleTitle, p.hours]);
                     });
                 }
             });
@@ -2243,11 +2243,11 @@
             }
             
             // All Equipment Combined
-            const allEquipment = [['Date', 'Contract', 'Project', 'Equipment', 'Type', 'Hours', 'Operator', 'Status']];
+            const allEquipment = [['Date', 'Contract', 'Project', 'Type', 'Quantity', 'Hours', 'Condition', 'Remarks']];
             entries.forEach(entry => {
                 if (entry.equipment) {
                     entry.equipment.forEach(e => {
-                        allEquipment.push([entry.date, entry.contractNumber, entry.projectName, e.name, e.type, e.hours, e.operator, e.status]);
+                        allEquipment.push([entry.date, entry.contractNumber, entry.projectName, e.type, e.quantity, e.hours, e.condition, e.remarks]);
                     });
                 }
             });
@@ -2257,11 +2257,11 @@
             }
             
             // All Activities Combined
-            const allActivities = [['Date', 'Contract', 'Project', 'Activity', 'Location', 'Planned', 'Actual', 'Status', 'Comments']];
+            const allActivities = [['Date', 'Contract', 'Project', 'Code', 'Description', 'Planned (%)', 'Actual (%)', 'Notes']];
             entries.forEach(entry => {
                 if (entry.activities) {
                     entry.activities.forEach(a => {
-                        allActivities.push([entry.date, entry.contractNumber, entry.projectName, a.activity, a.location, a.planned, a.actual, a.status, a.comments]);
+                        allActivities.push([entry.date, entry.contractNumber, entry.projectName, a.code, a.description, a.planned, a.actual, a.notes]);
                     });
                 }
             });
@@ -2271,11 +2271,11 @@
             }
             
             // All Delays Combined
-            const allDelays = [['Date', 'Contract', 'Project', 'Reason', 'Impact', 'Hours Lost', 'Responsible', 'Mitigation']];
+            const allDelays = [['Date', 'Contract', 'Project', 'Cause Type', 'Description', 'Impact', 'Hours Lost', 'Affected Activities', 'Action Taken']];
             entries.forEach(entry => {
                 if (entry.delays) {
                     entry.delays.forEach(d => {
-                        allDelays.push([entry.date, entry.contractNumber, entry.projectName, d.reason, d.impact, d.hoursLost, d.responsible, d.mitigation]);
+                        allDelays.push([entry.date, entry.contractNumber, entry.projectName, d.causeType, d.description, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]);
                     });
                 }
             });
