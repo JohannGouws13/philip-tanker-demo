@@ -2412,6 +2412,23 @@
                     yPos += (commentLines.length * 6) + 7;
                 }
                 
+                // Signature
+                if (entry.signatureData) {
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('DIGITAL SIGNATURE', 20, yPos);
+                    yPos += 7;
+                    doc.addImage(entry.signatureData, 'PNG', 20, yPos, 80, 30);
+                    yPos += 35;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    doc.text(`Completed by: ${entry.completedBy}`, 20, yPos);
+                }
+                
                 // Footer
                 doc.setFontSize(8);
                 doc.text(`Entry ID: ${entry.id}`, 20, 285);
