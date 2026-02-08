@@ -7,70 +7,548 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; }
-        h1 { margin-bottom: 20px; }
+        /* ============================================
+           PROFESSIONAL ENGINEERING PLATFORM STYLING
+           Caterpillar meets Apple Design
+           ============================================ */
         
-        /* Navigation */
-        .top-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .top-nav button { padding: 10px 20px; cursor: pointer; }
+        /* Base Resets & Typography */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
         
-        /* Tab Navigation */
-        .tab-nav { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #ddd; flex-wrap: wrap; }
-        .tab-nav button { padding: 10px 15px; background: #f0f0f0; border: none; cursor: pointer; }
-        .tab-nav button.active { background: #007bff; color: white; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 0;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* Main Container */
+        .container { 
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Header Section */
+        h1 { 
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #ffffff;
+            padding: 32px 40px;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            border-bottom: 4px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        h1::before {
+            content: "🏗️";
+            font-size: 32px;
+        }
+        
+        /* Content Wrapper */
+        #formView, #listView {
+            padding: 40px 80px;
+        }
+        
+        /* Top Navigation */
+        .top-nav { 
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            margin-top: 20px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .top-nav button { 
+            padding: 24px 24px;
+            background: #ffffff;
+            color: #1e293b;
+            border: 8px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .top-nav button:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .top-nav button:active {
+            transform: translateY(0);
+        }
+        
+        /* Tab Navigation - Professional Clean Style */
+        .tab-nav { 
+            display: flex;
+            gap: 0;
+            margin-bottom: 32px;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 8px 8px 0 8px;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .tab-nav button { 
+            padding: 14px 20px;
+            background: transparent;
+            color: #64748b;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            letter-spacing: 0.3px;
+        }
+        
+        .tab-nav button:hover {
+            color: #334155;
+            background: rgba(248, 250, 252, 0.8);
+        }
+        
+        .tab-nav button.active { 
+            background: #ffffff;
+            color: #1e293b;
+            border-bottom-color: #f59e0b;
+            font-weight: 700;
+        }
         
         /* Tab Content */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content { 
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
         
-        /* Forms */
-        .form-section { margin-bottom: 30px; }
-        .form-section h3 { margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .form-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin-bottom: 15px; align-items: start; }
-        .form-row label { font-weight: bold; padding-top: 8px; }
-        .form-row input, .form-row select, .form-row textarea { padding: 8px; border: 1px solid #ddd; width: 100%; }
-        .form-row textarea { min-height: 100px; }
-        .required::after { content: " *"; color: red; }
+        .tab-content.active { 
+            display: block; 
+        }
         
-        /* Dynamic Arrays */
-        .array-container { margin-bottom: 20px; }
-        .array-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .add-btn { padding: 8px 15px; background: #28a745; color: white; border: none; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #f8f8f8; }
-        td input, td select { width: 100%; padding: 5px; border: 1px solid #ddd; }
-        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-        .totals { background: #f0f8ff; padding: 10px; margin-top: 10px; font-weight: bold; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Form Sections - Card Style */
+        .form-section { 
+            margin-bottom: 32px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .form-section h3 { 
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 12px;
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        
+        .form-row { 
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 16px;
+            margin-bottom: 18px;
+            align-items: start;
+        }
+        
+        .form-row label { 
+            font-weight: 600;
+            padding-top: 12px;
+            color: #475569;
+            font-size: 14px;
+        }
+        
+        .form-row input, 
+        .form-row select, 
+        .form-row textarea { 
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #1e293b;
+        }
+        
+        .form-row input:focus, 
+        .form-row select:focus, 
+        .form-row textarea:focus { 
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+        
+        .form-row textarea { 
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .required::after { 
+            content: " *";
+            color: #dc2626;
+            font-weight: 700;
+        }
+        
+        /* Dynamic Arrays - Tables */
+        .array-container { 
+            margin-bottom: 32px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .array-header { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f59e0b;
+        }
+        
+        .array-header h3 {
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .add-btn { 
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .add-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Tables - Professional Engineering Style */
+        table { 
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td { 
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th { 
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        tbody tr:hover {
+            background: #f1f5f9;
+        }
+        
+        td input, td select { 
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        
+        td input:focus, td select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1);
+        }
+        
+        .delete-btn { 
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        }
+        
+        .totals { 
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 16px;
+            margin-top: 12px;
+            font-weight: 700;
+            color: #0c4a6e;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+        }
         
         /* Status Indicators */
-        .status-red { color: #dc3545; }
-        .status-amber { color: #ffc107; }
-        .status-green { color: #28a745; }
+        .status-red { color: #dc2626; font-weight: 700; }
+        .status-amber { color: #d97706; font-weight: 700; }
+        .status-green { color: #059669; font-weight: 700; }
         
-        /* Signature */
-        #signatureCanvas { border: 1px solid #ddd; cursor: crosshair; background: white; }
-        .signature-controls { margin-top: 10px; }
+        /* Signature Canvas */
+        #signatureCanvas { 
+            border: 2px solid #cbd5e1;
+            cursor: crosshair;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
         
-        /* Save Button */
-        .save-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd; }
-        .save-btn { padding: 15px 30px; background: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .save-btn:hover { background: #0056b3; }
+        .signature-controls { 
+            margin-top: 12px; 
+        }
         
-        /* Message */
-        .message { padding: 10px; margin: 10px 0; border-radius: 4px; display: none; }
-        .message.success { background: #d4edda; color: #155724; display: block; }
-        .message.error { background: #f8d7da; color: #721c24; display: block; }
+        .signature-controls button {
+            padding: 8px 16px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
         
-        /* Entries List */
-        .entries-list { margin-top: 20px; }
-        .entry-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; background: #f9f9f9; }
-        .entry-card h3 { margin-bottom: 10px; }
-        .entry-actions { margin-top: 10px; }
-        .entry-actions button { margin-right: 10px; padding: 5px 10px; cursor: pointer; }
+        .signature-controls button:hover {
+            background: #475569;
+        }
+        
+        /* Save & Next Buttons - Hero CTAs */
+        .save-section { 
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .save-btn, .next-btn { 
+            padding: 18px 48px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+            text-transform: uppercase;
+        }
+        
+        .save-btn:hover, .next-btn:hover { 
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.5);
+        }
+        
+        .save-btn:active, .next-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Messages */
+        .message { 
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+            border-left: 4px solid;
+        }
+        
+        .message.success { 
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #10b981;
+            display: block;
+        }
+        
+        .message.error { 
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #dc2626;
+            display: block;
+        }
+        
+        /* Entries List View */
+        .entries-list { 
+            margin-top: 24px; 
+        }
+        
+        .entry-card { 
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            margin-bottom: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+        
+        .entry-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+        
+        .entry-card h3 { 
+            margin-bottom: 16px;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 2px solid #f59e0b;
+            padding-bottom: 8px;
+        }
+        
+        .entry-card p {
+            margin-bottom: 8px;
+            color: #475569;
+            font-size: 14px;
+        }
+        
+        .entry-card strong {
+            color: #1e293b;
+            font-weight: 700;
+        }
+        
+        .entry-actions { 
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .entry-actions button { 
+            padding: 10px 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            background: #64748b;
+            color: white;
+        }
+        
+        .entry-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Export Buttons in List View */
+        #entriesList > div button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        #entriesList > div button:first-child {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        #entriesList > div button:last-child {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        #entriesList > div button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* List View Title */
+        #listView h2 {
+            color: #1e293b;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #f59e0b;
+        }
     </style>
 </head>
 <body>
@@ -460,6 +938,7 @@
             <!-- Save Button (visible on all tabs) -->
             <div class="save-section">
                 <button class="save-btn" onclick="saveDiaryEntry()">Save Diary Entry</button>
+                <button class="next-btn" onclick="nextTab()">Next</button>
             </div>
         </div>
         
@@ -518,6 +997,20 @@
             
             document.getElementById('tab' + tabNum).classList.add('active');
             document.querySelectorAll('.tab-nav button')[tabNum - 1].classList.add('active');
+        }
+        
+        // Next Tab Function
+        function nextTab() {
+            const activeTabButton = document.querySelector('.tab-nav button.active');
+            const allButtons = Array.from(document.querySelectorAll('.tab-nav button'));
+            const currentIndex = allButtons.indexOf(activeTabButton);
+            
+            if (currentIndex < allButtons.length - 1) {
+                showTab(currentIndex + 2); // +2 because tabs are 1-indexed
+            } else {
+                // If on last tab, go to first tab
+                showTab(1);
+            }
         }
         
         // View Navigation
