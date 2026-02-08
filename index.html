@@ -559,6 +559,7 @@
         <div class="top-nav">
             <button onclick="showView('form')">+ New Entry</button>
             <button onclick="showView('list')">Diary Entries</button>
+            <button onclick="populateTestData()" style="background: #8b5cf6; border-color: #7c3aed;">🧪 Populate Test Data</button>
         </div>
         
         <div id="message" class="message"></div>
@@ -1024,6 +1025,102 @@
                 document.getElementById('listView').style.display = 'block';
                 loadEntries();
             }
+        }
+        
+        // Populate Test Data Function
+        function populateTestData() {
+            // Tab 1: General Information
+            document.getElementById('contractNumber').value = 'B18-2026';
+            document.getElementById('siteSupervisor').value = 'Willem Jansen van Vuuren';
+            document.getElementById('projectName').value = 'SMH/Addax Pipeline Extension';
+            document.getElementById('projectLocation').value = 'Nouakchott, Mauritania';
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            
+            // Weather conditions
+            document.getElementById('weatherCondition').value = 'Partly Cloudy';
+            document.getElementById('minTemp').value = '24';
+            document.getElementById('maxTemp').value = '38';
+            document.getElementById('windSpeed').value = '15';
+            document.getElementById('humidity').value = '45';
+            document.getElementById('rainfall').value = '0';
+            document.getElementById('rainfallDuration').value = '0';
+            
+            // Work summaries
+            document.getElementById('workCompleted').value = 'Completed excavation for Pipeline Section A (Ch 0+000 to 0+250). Installed 12x 600mm HDPE pipes. Backfilled and compacted Trench 1. Conducted weld integrity tests on 8 joints - all passed. Mobilized equipment for next section.';
+            document.getElementById('issuesDelays').value = 'Minor delay due to late arrival of compaction equipment (2 hours). Waiting on client approval for design change on valve positioning at Station 3.';
+            
+            // Tab 2: Personnel - Add 5 staff members
+            personnel = [];
+            personnel.push({ id: Date.now() + 1, name: 'Willem van Vuuren', roleCategory: 'Site Manager', roleTitle: 'Site Manager', hours: 10 });
+            personnel.push({ id: Date.now() + 2, name: 'Petrus Steyn', roleCategory: 'Engineer', roleTitle: 'Civil Engineer', hours: 10 });
+            personnel.push({ id: Date.now() + 3, name: 'Johannes Botha', roleCategory: 'Operator', roleTitle: 'Excavator Operator', hours: 8 });
+            personnel.push({ id: Date.now() + 4, name: 'Thabo Mkhize', roleCategory: 'Skilled', roleTitle: 'Welder (6G Certified)', hours: 9 });
+            personnel.push({ id: Date.now() + 5, name: 'Sarah Johnson', roleCategory: 'QC', roleTitle: 'Quality Inspector', hours: 8 });
+            renderPersonnel();
+            
+            // Tab 3: Equipment - Add 4 pieces of equipment
+            equipment = [];
+            equipment.push({ id: Date.now() + 11, type: 'Excavator', quantity: 2, hours: 8, condition: 'Good', remarks: 'CAT 320D - Regular service due next week' });
+            equipment.push({ id: Date.now() + 12, type: 'Dump truck', quantity: 3, hours: 7.5, condition: 'Good', remarks: '30-ton capacity, all operational' });
+            equipment.push({ id: Date.now() + 13, type: 'Compactor', quantity: 1, hours: 6, condition: 'Fair', remarks: 'Hydraulic leak repaired, monitoring' });
+            equipment.push({ id: Date.now() + 14, type: 'Generator', quantity: 2, hours: 10, condition: 'Good', remarks: '150kVA, site power supply' });
+            renderEquipment();
+            
+            // Tab 4: Work Progress - Add 3 activities
+            activities = [];
+            activities.push({ id: Date.now() + 21, code: 'B18', description: 'Pipeline excavation Ch 0+000 to 0+500', planned: 80, actual: 95, notes: 'Ahead of schedule, good soil conditions' });
+            activities.push({ id: Date.now() + 22, code: 'B20', description: 'HDPE pipe installation and welding', planned: 60, actual: 55, notes: 'Slightly behind due to equipment delay' });
+            activities.push({ id: Date.now() + 23, code: 'B21', description: 'Trench backfill and compaction', planned: 50, actual: 65, notes: 'Good progress, weather favorable' });
+            renderActivities();
+            
+            // Tab 5: Delays - Add 2 delays
+            delays = [];
+            delays.push({ id: Date.now() + 31, causeType: 'Equipment Breakdown', description: 'Compactor hydraulic failure', impact: 'Moderate', hoursLost: 2, affectedActivities: 'Backfilling operations Section A', actionTaken: 'Backup compactor mobilized, repairs completed same day' });
+            delays.push({ id: Date.now() + 32, causeType: 'Client Delay', description: 'Pending approval for valve station relocation', impact: 'Minor', hoursLost: 0, affectedActivities: 'Station 3 foundation work on hold', actionTaken: 'Submitted revised drawings, awaiting response' });
+            renderDelays();
+            
+            // Tab 6: Safety & Weather
+            document.getElementById('incidents').value = 'No incidents reported. Near-miss: worker almost stepped on exposed rebar - immediate toolbox talk conducted.';
+            document.getElementById('safetyInspections').value = 'Daily site inspection completed. PPE compliance check - 100%. Fire extinguisher locations verified. First aid kit restocked.';
+            document.getElementById('ppeCompliance').value = '100% - All personnel in full PPE';
+            document.getElementById('firstAid').value = 'Minor cut treated - operator hand injury from metal edge. Bandaged on site.';
+            
+            // Weather Impacts - Add 1
+            weatherImpacts = [];
+            weatherImpacts.push({ id: Date.now() + 41, impactType: 'Wind', severity: 'Moderate', affectedActivities: 'Crane operations suspended 11:00-13:00', duration: 2, mitigation: 'Rescheduled lifting operations to late afternoon when wind subsided' });
+            renderWeatherImpacts();
+            
+            // Tab 7: Production - Materials
+            materials = [];
+            materials.push({ id: Date.now() + 51, materialType: 'HDPE Pipes 600mm', quantity: 250, unit: 'meters', notes: 'Delivered by Afripipes, batch #A2024-089' });
+            materials.push({ id: Date.now() + 52, materialType: 'Cement 42.5N', quantity: 80, unit: 'bags', notes: 'PPC brand, for valve station foundations' });
+            materials.push({ id: Date.now() + 53, materialType: 'Backfill aggregate', quantity: 120, unit: 'tons', notes: 'Grade A compaction material, tested and approved' });
+            renderMaterials();
+            
+            document.getElementById('materialsNeeded').value = 'Required for Monday: 150m additional HDPE pipes, 40 bags cement, welding electrodes (E7018), hydraulic oil for compactor service.';
+            document.getElementById('productionIssues').value = 'Slight delay in concrete curing for valve base due to ambient temperature. Extended curing time by 6 hours.';
+            
+            // Visitors - Add 2
+            visitors = [];
+            visitors.push({ id: Date.now() + 61, name: 'Philip Smit', company: 'Client/Owner Rep', purpose: 'Site progress inspection and quality review', timeOnSite: '09:00 - 11:30' });
+            visitors.push({ id: Date.now() + 62, name: 'Dr. Ahmed Hassan', company: 'Environmental Consultant', purpose: 'Environmental compliance audit', timeOnSite: '14:00 - 16:00' });
+            renderVisitors();
+            
+            document.getElementById('generalComments').value = 'Excellent team morale. Weather conditions optimal for earthworks. Local community liaison officer visited - no community concerns raised.';
+            
+            // Tab 8: Events - Add 3 events
+            events = [];
+            events.push({ id: Date.now() + 71, eventDate: '2026-02-08', description: 'Verbal instruction to proceed with alternative access road', type: 'Instruction', source: 'Client Project Manager', costImpact: 'R 45,000', liability: 'Client', reference: 'VI-2026-012', status: 'Pending written confirmation' });
+            events.push({ id: Date.now() + 72, eventDate: '2026-02-07', description: 'Design change: valve station relocation 15m east', type: 'Variation', source: 'Engineer', costImpact: 'R 28,500', liability: 'Under review', reference: 'VO-2026-008', status: 'Submitted for approval' });
+            events.push({ id: Date.now() + 73, eventDate: '2026-02-08', description: 'Site visit by regional safety officer - commendation issued', type: 'Notification', source: 'Safety Authority', costImpact: 'Nil', liability: 'N/A', reference: 'SR-2026-0208', status: 'Closed' });
+            renderEvents();
+            
+            // Signature
+            document.getElementById('completedBy').value = document.getElementById('siteSupervisor').value;
+            
+            // Show success message
+            showMessage('✅ Test data populated successfully! All tabs filled with sample data. Review and save when ready.', 'success');
+            showTab(1);
         }
         
         // Rainfall duration toggle
