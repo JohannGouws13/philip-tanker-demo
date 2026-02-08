@@ -2240,6 +2240,8 @@
                 yPos += 7;
                 doc.setFont(undefined, 'normal');
                 doc.text(`${entry.weatherCondition} | Temp: ${entry.minTemp}-${entry.maxTemp}°C | Wind: ${entry.windSpeed}km/h | Humidity: ${entry.humidity}%`, 20, yPos);
+                yPos += 7;
+                doc.text(`Rainfall: ${entry.rainfall || 0} mm | Duration: ${entry.rainfallDuration || 0} hours`, 20, yPos);
                 yPos += 12;
                 
                 // Personnel Table
@@ -2329,12 +2331,12 @@
                     
                     doc.autoTable({
                         startY: yPos,
-                        head: [['Cause', 'Impact', 'Hrs Lost', 'Affected', 'Action']],
-                        body: entry.delays.map(d => [d.causeType, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]),
+                        head: [['Cause Type', 'Description', 'Impact', 'Hrs Lost', 'Affected', 'Action']],
+                        body: entry.delays.map(d => [d.causeType, d.description, d.impact, d.hoursLost, d.affectedActivities, d.actionTaken]),
                         theme: 'grid',
                         headStyles: { fillColor: [220, 53, 69] },
                         margin: { left: 20, right: 20 },
-                        styles: { fontSize: 8 }
+                        styles: { fontSize: 7 }
                     });
                     
                     yPos = doc.lastAutoTable.finalY + 12;
@@ -2416,42 +2418,126 @@
                         yPos = 20;
                     }
                     doc.setFont(undefined, 'bold');
-                    doc.text('EVENTS & INSTRUCTIONS', 20, yPos);
+                    doc.text('EVENTS, INSTRUCTIONS & VARIATIONS', 20, yPos);
                     yPos += 5;
                     
                     doc.autoTable({
                         startY: yPos,
-                        head: [['Date', 'Description', 'Type', 'Cost', 'Status']],
-                        body: entry.events.map(e => [e.eventDate, e.description, e.type, e.costImpact, e.status]),
+                        head: [['Date', 'Description', 'Type', 'Source', 'Cost Impact', 'Liability', 'Reference', 'Status']],
+                        body: entry.events.map(e => [e.eventDate, e.description, e.type, e.source, e.costImpact, e.liability, e.reference, e.status]),
                         theme: 'grid',
                         headStyles: { fillColor: [33, 150, 243] },
                         margin: { left: 20, right: 20 },
-                        styles: { fontSize: 8 }
+                        styles: { fontSize: 7 }
                     });
                     
                     yPos = doc.lastAutoTable.finalY + 12;
                 }
                 
-                // Safety & Comments
-                if (yPos > 240) {
+                // Safety & Incidents
+                if (yPos > 220) {
                     doc.addPage();
                     yPos = 20;
                 }
                 
+                doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
-                doc.text('SAFETY & WORK SUMMARY', 20, yPos);
+                doc.text('SAFETY & INCIDENTS', 20, yPos);
                 yPos += 7;
                 doc.setFont(undefined, 'normal');
-                doc.setFontSize(10);
+                doc.setFontSize(9);
+                doc.text(`Incidents: ${entry.incidents || 'None'}`, 20, yPos);
+                yPos += 6;
+                doc.text(`Safety Inspections: ${entry.safetyInspections || 'None'}`, 20, yPos);
+                yPos += 6;
+                doc.text(`PPE Compliance: ${entry.ppeCompliance || 'N/A'}`, 20, yPos);
+                yPos += 6;
+                doc.text(`First Aid/Medical: ${entry.firstAid || 'None'}`, 20, yPos);
+                yPos += 12;
                 
-                if (entry.incidents) {
-                    doc.text(`Incidents: ${entry.incidents.substring(0, 80)}...`, 20, yPos);
-                    yPos += 6;
-                }
+                // Work Completed Summary
                 if (entry.workCompleted) {
-                    const workLines = doc.splitTextToSize(entry.workCompleted.substring(0, 200) + '...', 170);
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('WORK COMPLETED SUMMARY', 20, yPos);
+                    yPos += 7;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const workLines = doc.splitTextToSize(entry.workCompleted, 170);
                     doc.text(workLines, 20, yPos);
-                    yPos += (workLines.length * 6);
+                    yPos += (workLines.length * 6) + 7;
+                }
+                
+                // Issues & Delays Summary
+                if (entry.issuesDelays) {
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('ISSUES & DELAYS SUMMARY', 20, yPos);
+                    yPos += 7;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const issueLines = doc.splitTextToSize(entry.issuesDelays, 170);
+                    doc.text(issueLines, 20, yPos);
+                    yPos += (issueLines.length * 6) + 7;
+                }
+                
+                // Materials Needed Tomorrow
+                if (entry.materialsNeeded) {
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('MATERIALS NEEDED TOMORROW', 20, yPos);
+                    yPos += 7;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const matLines = doc.splitTextToSize(entry.materialsNeeded, 170);
+                    doc.text(matLines, 20, yPos);
+                    yPos += (matLines.length * 6) + 7;
+                }
+                
+                // Production Issues
+                if (entry.productionIssues) {
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('PRODUCTION ISSUES/DELAYS', 20, yPos);
+                    yPos += 7;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const prodLines = doc.splitTextToSize(entry.productionIssues, 170);
+                    doc.text(prodLines, 20, yPos);
+                    yPos += (prodLines.length * 6) + 7;
+                }
+                
+                // General Comments
+                if (entry.generalComments) {
+                    if (yPos > 230) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('GENERAL COMMENTS', 20, yPos);
+                    yPos += 7;
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    const commentLines = doc.splitTextToSize(entry.generalComments, 170);
+                    doc.text(commentLines, 20, yPos);
+                    yPos += (commentLines.length * 6) + 7;
                 }
                 
                 // Footer
